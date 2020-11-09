@@ -81,7 +81,7 @@
 
   function viewSeikakuUpDown(updown) {
     if (updown === 1) return '<td class="up">UP</td>';
-    if (updown === -1) return '<td class="down">DOWN</td>';
+    if (updown === 2) return '<td class="down">DOWN</td>';
     return '<td>-</td>';
   }
 
