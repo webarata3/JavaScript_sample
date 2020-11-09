@@ -4,76 +4,18 @@
   <meta charset="utf-8">
   <title>ポケモン個体値計算</title>
   <script defer src="main.js"></script>
-  <style>
-   body {
-    font-family: monospace;
-   }
-
-   input[type="number"] {
-    width: 3em;
-   }
-
-   table {
-    border-collapse: collapse;
-   }
-
-   thead {
-    font-size: 8pt;
-   }
-
-   #seikaku {
-    margin-bottom: 10px;
-   }
-
-   #status tbody {
-    font-size: 10pt;
-   }
-
-   #seikaku td {
-    padding: 2px 5px;
-   }
-
-   #status tbody {
-    font-size: 12pt;
-   }
-
-   #status td {
-    text-align: right;
-    padding: 2px 5px;
-   }
-
-   tbody tr:nth-child(odd) {
-    background-color: rgb(242, 238, 243);
-   }
-
-   tbody tr:hover {
-    background-color: #ff0;
-   }
-
-   .selected {
-    border: 3px solid #f00;
-   }
-
-   .up {
-    color: #00f;
-    background-color: #eef;
-   }
-
-   .down {
-    color: #f00;
-    background-color: #fee;
-   }
-
-  </style>
+  <link rel="stylesheet" href="main.css">
  </head>
  <body>
-  <label for="id">レベル</label><input type="number" id="lv" value="50">
-  <label for="hp">HP</label><input type="number" id="hp" value="100">
-  <label for="attack">こうげき</label><input type="number" id="attack" value="100">
-  <label for="defence">ぼうぎょ</label><input type="number" id="defence" value="100">
-  <label for="spAttack">とくこう</label><input type="number" id="spAttack" value="100">
-  <label for="spDefence">とくぼう</label><input type="number" id="spDefence" value="100">
-  <label for="speed">すばやさ</label><input type="number" id="speed" value="100">
+  <div id="shuzoku">
+   <label for="id">レベル</label><input type="number" id="lv" value="50">
+   <label for="hp">HP</label><input type="number" id="hp" value="100">
+   <label for="attack">こうげき</label><input type="number" id="attack" value="100">
+   <label for="defence">ぼうぎょ</label><input type="number" id="defence" value="100">
+   <label for="spAttack">とくこう</label><input type="number" id="spAttack" value="100">
+   <label for="spDefence">とくぼう</label><input type="number" id="spDefence" value="100">
+   <label for="speed">すばやさ</label><input type="number" id="speed" value="100">
+  </div>
   <table id="seikaku">
    <thead>
     <tr>

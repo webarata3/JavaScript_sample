@@ -1,0 +1,64 @@
+@charset 'utf-8';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+ font-family: monospace;
+}
+
+#shuzoku, #seikaku {
+  margin-bottom: 20px;
+}
+
+input[type="number"] {
+ width: 4em;
+}
+
+table {
+ border-collapse: collapse;
+}
+
+thead {
+ font-size: 8pt;
+}
+
+#status tbody {
+ font-size: 10pt;
+}
+
+#seikaku td {
+ padding: 2px 5px;
+}
+
+#status tbody {
+ font-size: 9pt;
+}
+
+#status td {
+ text-align: right;
+ padding: 2px 5px;
+}
+
+tbody tr:nth-child(odd) {
+ background-color: rgb(242, 238, 243);
+}
+
+tbody tr:hover {
+ background-color: #ff0;
+}
+
+.selected {
+ border: 3px solid #f00;
+}
+
+.up {
+ color: #00f;
+ background-color: #eef;
+}
+
+.down {
+ color: #f00;
+ background-color: #fee;
+}
