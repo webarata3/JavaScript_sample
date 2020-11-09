@@ -122,11 +122,11 @@
   }
 
   function calcHp(lv, shuzoku, kotai) {
-    return Math.floor((shuzoku * 2 + kotai) * lv / 100 + lv + 10);
+    return Math.floor((shuzoku * 2 + kotai) * lv / 100) + lv + 10;
   }
 
   function calcABCDS(lv, shuzoku, kotai, seikakuHosei) {
-    return Math.floor(((shuzoku * 2 + kotai) * lv / 100 + 5) * seikakuHosei);
+    return Math.floor((Math.floor((shuzoku * 2 + kotai) * lv / 100) + 5) * seikakuHosei);
   }
 
   function getSeikakuHosei() {
