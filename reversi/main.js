@@ -23,6 +23,7 @@
   let next = KOMA_KURO;
 
   const messageElm = document.querySelector('#message');
+  let canPutPos = [];
 
   function updateBoard() {
     const tds = document.querySelectorAll('td');
@@ -32,10 +33,20 @@
         tds[y * 8 + x].classList.remove('can-put');
       }
     }
-    const canPutPos = getCanPutPos(next);
+    canPutPos = getCanPutPos(next);
     for (const pos of canPutPos) {
       tds[pos[1] * 8 + pos[0]].classList.add('can-put');
     }
+
+    let kuroCount = 0;
+    let shiroCount = 0;
+    for (let x = 0; x < BOARD_MAX_X; x++) {
+      for (let y = 0; y < BOARD_MAX_Y; y++) {
+        if (board[y][x] === KOMA_KURO) kuroCount++;
+        if (board[y][x] === KOMA_SHIRO) shiroCount++;
+      }
+    }
+    document.querySelector('#count').textContent = `黒:${kuroCount}  白:${shiroCount}`;
   }
 
   function getCanPutPos(komaIro) {
@@ -83,5 +94,77 @@
     return false;
   }
 
+  function init() {
+    const tbody = document.querySelector('tbody');
+    for (let y = 0; y < BOARD_MAX_Y; y++) {
+      const tr = document.createElement('tr');
+      for (let x = 0; x < BOARD_MAX_X; x++) {
+        const td = document.createElement('td');
+        td.dataset.x = x;
+        td.dataset.y = y;
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+
+    tbody.addEventListener('click', event => {
+      const tag = event.target;
+      if (tag.tagName !== 'TD') return;
+      const x = parseInt(tag.dataset.x);
+      const y = parseInt(tag.dataset.y);
+      if (canPut(x, y)) {
+        messageElm.textContent = '';
+        board[y][x] = next;
+        turn(x, y);
+        next = next === KOMA_KURO ? KOMA_SHIRO : KOMA_KURO;
+        updateBoard();
+      } else {
+        messageElm.textContent = 'そこには置けません';
+      }
+    });
+  }
+
+  function canPut(x, y) {
+    for (const pos of canPutPos) {
+      if (pos[0] === x && pos[1] === y) return true;
+    }
+    return false;
+  }
+
+  function turn(checkX, checkY) {
+    for (const direction of CHECK_DIRECTIONS) {
+      let other = false;
+      let tempX = checkX;
+      let tempY = checkY;
+      while (true) {
+        tempX = tempX + direction[0];
+        tempY = tempY + direction[1];
+        if (tempX < 0 || tempX >= BOARD_MAX_X) break;
+        if (tempY < 0 || tempY >= BOARD_MAX_Y) break;
+        const checkKomaIro = board[tempY][tempX];
+        if (checkKomaIro === KOMA_NOTHING) break;
+        if (other) {
+          if (checkKomaIro === next) {
+            let endX = tempX;
+            let endY = tempY;
+            tempX = checkX;
+            tempY = checkY;
+            while (true) {
+              if (endX === tempX && endY === tempY) break;
+              tempX = tempX + direction[0];
+              tempY = tempY + direction[1];
+              board[tempY][tempX] = next;
+            }
+            break;
+          };
+        } else {
+          if (checkKomaIro === next) break;
+          other = true;
+        }
+      }
+    }
+  }
+
+  init();
   updateBoard();
 })();

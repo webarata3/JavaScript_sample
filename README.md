@@ -12,3 +12,8 @@
 ## ポケモン個体値計算
 
 - [ポケモン個体値計算](https://webarata3.github.io/JavaScript_sample/poke-status/)
+
+## リバーシ
+
+- [リバーシ](https://webarata3.github.io/JavaScript_sample/reversi/)
+
