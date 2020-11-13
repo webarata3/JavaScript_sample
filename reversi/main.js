@@ -88,6 +88,10 @@
       return this.#maxY;
     }
 
+    get canPutPos() {
+      return this.#canPutPos;
+    }
+
     countStone(color) {
       return this.#board
         .map(row => row.filter(stone => stone === color)) // 指定の色以外を消す
@@ -147,20 +151,26 @@
   }
 
   class BoardView {
+    static PLAY_HUMAN = 1;
+    static PLAY_CPU = 2;
     #boardElm;
     #statusElm;
     #messageElm;
     #countElm;
     #board;
     #trtds;
+    #players;
+    #next;
     static STONE_IMAGE = ['●', '○', ''];
 
-    constructor(boardElmSelector, statusElmSelector, board) {
+    constructor(boardElmSelector, statusElmSelector, board, players) {
       this.#setElm(boardElmSelector, statusElmSelector);
       this.#board = board;
       this.#init();
       this.#setEvent();
-      this.update();
+      this.#render();
+      this.#players = players;
+      this.#next = 0;
     }
 
     #setElm(boardElmSelector, statusElmSelector) {
@@ -190,6 +200,8 @@
     }
 
     #clickBoard(event) {
+      if (this.#nextPlayer() === BoardView.PLAY_CPU) return;
+
       const target = event.target;
       if (target.tagName !== 'TD') return;
       const x = parseInt(target.dataset.x);
@@ -216,6 +228,10 @@
 
     update() {
       this.#render();
+      this.#turnEnd();
+      if (this.#nextPlayer() === BoardView.PLAY_CPU) {
+        this.#cpu();
+      }
     }
 
     #render() {
@@ -245,9 +261,23 @@
     #highlightBoard(x, y, type) {
       this.#trtds[y][x].classList.add(type === 1 ? 'put' : 'change');
     }
+
+    #nextPlayer() {
+      return this.#players[this.#next];
+    }
+
+    #turnEnd() {
+      this.#next = [1, 0][this.#next];
+    }
+
+    #cpu() {
+      const canPutPos = this.#board.canPutPos;
+      const pos = Math.floor(Math.random() * canPutPos.length);
+      this.#board.setStone(canPutPos[pos][0], canPutPos[pos][1]);
+    }
   }
 
   const board = new Board(8, 8, [[[3, 3], [4, 4]], [[3, 4], [4, 3]]], Board.STONE_BLACK);
-  const boardView = new BoardView('#board tbody', '#status', board);
+  const boardView = new BoardView('#board tbody', '#status', board, [BoardView.PLAY_HUMAN, BoardView.PLAY_CPU]);
   board.addObserver(boardView);
 })();
