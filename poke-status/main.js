@@ -17,14 +17,14 @@
   spDefenceElm.addEventListener('input', calc);
   speedElm.addEventListener('input', calc);
 
-  document.querySelector('#seikaku tbody').addEventListener('click', event => {
+  document.querySelector('#nature tbody').addEventListener('click', event => {
     document.querySelector('.selected').classList.remove('selected');
     const trElm = event.target.parentNode;
     trElm.classList.add('selected');
     calc();
   });
 
-  const seikaku = [
+  const natures = [
     ['てれや', 0, 0, 0, 0, 0],
     ['がんばりや', 0, 0, 0, 0, 0],
     ['すなお', 0, 0, 0, 0, 0],
@@ -52,51 +52,51 @@
     ['むじゃき', 0, 0, 0, 2, 1]
   ];
   const HOSEI = [1.0, 1.1, 0.9];
-  const seikakuMap = new Map();
-  for (const s of seikaku) {
-    seikakuMap.set(s[0], {
-      name: s[0],
-      attack: HOSEI[s[1]],
-      defence: HOSEI[s[2]],
-      spAttack: HOSEI[s[3]],
-      spDefence: HOSEI[s[4]],
-      speed: HOSEI[s[5]]
+  const natureMap = new Map();
+  for (const nature of natures) {
+    natureMap.set(nature[0], {
+      name: nature[0],
+      attack: HOSEI[nature[1]],
+      defence: HOSEI[nature[2]],
+      spAttack: HOSEI[nature[3]],
+      spDefence: HOSEI[nature[4]],
+      speed: HOSEI[nature[5]]
     });
   }
 
-  function viewSeikaku() {
-    const tbodyElm = document.querySelector('#seikaku tbody');
-    for (const s of seikaku) {
+  function viewNature() {
+    const tbodyElm = document.querySelector('#nature tbody');
+    for (const nature of natures) {
       tbodyElm.insertAdjacentHTML('beforeend', `<tr>
-       <td>${s[0]}</td>
-       ${viewSeikakuUpDown(s[1])}
-       ${viewSeikakuUpDown(s[2])}
-       ${viewSeikakuUpDown(s[3])}
-       ${viewSeikakuUpDown(s[4])}
-       ${viewSeikakuUpDown(s[5])}
+       <td>${nature[0]}</td>
+       ${viewNatureUpDown(nature[1])}
+       ${viewNatureUpDown(nature[2])}
+       ${viewNatureUpDown(nature[3])}
+       ${viewNatureUpDown(nature[4])}
+       ${viewNatureUpDown(nature[5])}
       </tr>`);
     }
-    document.querySelector('#seikaku tbody tr').classList.add('selected');
+    document.querySelector('#nature tbody tr').classList.add('selected');
   }
 
-  function viewSeikakuUpDown(updown) {
+  function viewNatureUpDown(updown) {
     if (updown === 1) return '<td class="up">UP</td>';
     if (updown === 2) return '<td class="down">DOWN</td>';
     return '<td>-</td>';
   }
 
   function calc() {
-    const seikakuHosei = getSeikakuHosei();
+    const natureHosei = getNatureHosei();
     const tbodyElm = document.querySelector('#status tbody');
     tbodyElm.innerHTML = '';
     const shuzoku = getStatus();
     for (let kotai = 0; kotai <= 31; kotai++) {
       const hp = calcHp(shuzoku.lv, shuzoku.hp, kotai);
-      const attack = calcABCDS(shuzoku.lv, shuzoku.attack, kotai, seikakuHosei.attack);
-      const defence = calcABCDS(shuzoku.lv, shuzoku.defnece, kotai, seikakuHosei.defence);
-      const spAttack = calcABCDS(shuzoku.lv, shuzoku.spAttack, kotai, seikakuHosei.spAttack);
-      const spDefence = calcABCDS(shuzoku.lv, shuzoku.spDefence, kotai, seikakuHosei.spDefence);
-      const speed = calcABCDS(shuzoku.lv, shuzoku.speed, kotai, seikakuHosei.speed);
+      const attack = calcABCDS(shuzoku.lv, shuzoku.attack, kotai, natureHosei.attack);
+      const defence = calcABCDS(shuzoku.lv, shuzoku.defnece, kotai, natureHosei.defence);
+      const spAttack = calcABCDS(shuzoku.lv, shuzoku.spAttack, kotai, natureHosei.spAttack);
+      const spDefence = calcABCDS(shuzoku.lv, shuzoku.spDefence, kotai, natureHosei.spDefence);
+      const speed = calcABCDS(shuzoku.lv, shuzoku.speed, kotai, natureHosei.speed);
       tbodyElm.insertAdjacentHTML('beforeend', `<tr>
        <td>${kotai}</td>
        <td>${hp}</td>
@@ -125,15 +125,15 @@
     return Math.floor((shuzoku * 2 + kotai) * lv / 100) + lv + 10;
   }
 
-  function calcABCDS(lv, shuzoku, kotai, seikakuHosei) {
-    return Math.floor((Math.floor((shuzoku * 2 + kotai) * lv / 100) + 5) * seikakuHosei);
+  function calcABCDS(lv, shuzoku, kotai, natureHosei) {
+    return Math.floor((Math.floor((shuzoku * 2 + kotai) * lv / 100) + 5) * natureHosei);
   }
 
-  function getSeikakuHosei() {
-    const selectedSeikaku = document.querySelector('.selected td').textContent;
-    return seikakuMap.get(selectedSeikaku);
+  function getNatureHosei() {
+    const selectedNature = document.querySelector('.selected td').textContent;
+    return natureMap.get(selectedNature);
   }
 
-  viewSeikaku();
+  viewNature();
   calc();
 })();
