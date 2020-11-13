@@ -1,193 +1,253 @@
 (() => {
   'use strict';
 
-  const board = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 2, 0, 0, 0],
-    [0, 0, 0, 2, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0]
-  ];
+  class Board {
+    static STONE_BLACK = 0;
+    static STONE_WHITE = 1;
+    static STONE_NOTHING = 2;
+    static STONES = [Board.STONE_BLACK, Board.STONE_WHITE];
+    #maxX;
+    #maxY;
+    #board;
+    #nextColor;
+    #canPutPos;
+    #observers = [];
 
-  const BOARD_MAX_Y = board.length;
-  const BOARD_MAX_X = board[0].length;
+    static DIRECTIONS = [
+      [0, -1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+      [-1, 1],
+      [-1, 0],
+      [-1, -1]
+    ];
 
-  const KOMA_NOTHING = 0;
-  const KOMA_KURO = 1;
-  const KOMA_SHIRO = 2;
+    constructor(maxX, maxY, initStonesList, firstColor) {
+      this.#maxX = maxX;
+      this.#maxY = maxY;
+      this.#nextColor = firstColor;
+      this.#initBoard(initStonesList);
+    }
 
-  const koma = ['', '●', '○'];
-  let next = KOMA_KURO;
+    #initBoard(stonesList) {
+      this.#board = new Array(this.#maxY);
+      for (let y = 0; y < this.#maxY; y++) {
+        this.#board[y] = new Array(this.#maxX).fill(Board.STONE_NOTHING);
+      }
 
-  const messageElm = document.querySelector('#message');
-  let canPutPos = [];
+      for (const stone of Board.STONES) {
+        this.#setStones(stonesList[stone], stone);
+      }
+      this.#update();
+    }
 
-  function updateBoard() {
-    const tds = document.querySelectorAll('td');
-    for (let x = 0; x < BOARD_MAX_X; x++) {
-      for (let y = 0; y < BOARD_MAX_Y; y++) {
-        tds[y * 8 + x].textContent = koma[board[y][x]];
-        tds[y * 8 + x].classList.remove('can-put');
+    #setStones(stones, color) {
+      for (const stone of stones) {
+        this.#setStone(stone[0], stone[1], color);
+      }
+      this.#searchCanPutPos(this.#nextColor);
+    }
+
+    setStone(x, y) {
+      const changePos = this.#canPutPos.filter(pos => pos[0] === x && pos[1] === y)[0][2];
+      this.#setStone(x, y, this.#nextColor);
+      this.#changeColor(changePos);
+      this.#nextColor = this.#nextColor === Board.STONE_BLACK ? Board.STONE_WHITE : Board.STONE_BLACK;
+      this.#searchCanPutPos(this.#nextColor);
+      this.#update();
+      return changePos;
+    }
+
+    #changeColor(posList) {
+      for (const pos of posList) {
+        this.#board[pos[1]][pos[0]] = this.#nextColor;
       }
     }
-    canPutPos = getCanPutPos(next);
-    for (const pos of canPutPos) {
-      tds[pos[1] * 8 + pos[0]].classList.add('can-put');
+
+    #setStone(x, y, color) {
+      this.#board[y][x] = color;
     }
 
-    let kuroCount = 0;
-    let shiroCount = 0;
-    for (let x = 0; x < BOARD_MAX_X; x++) {
-      for (let y = 0; y < BOARD_MAX_Y; y++) {
-        if (board[y][x] === KOMA_KURO) kuroCount++;
-        if (board[y][x] === KOMA_SHIRO) shiroCount++;
-      }
+    checkStone(x, y) {
+      return this.#canPutPos
+        .filter(pos => pos[0] === x && pos[1] === y)
+        .length > 0;
     }
-    document.querySelector('#count').textContent = `黒:${kuroCount}  白:${shiroCount}`;
 
-    const status = confirmFinish(kuroCount, shiroCount, canPutPos);
-    if (status === null) return;
-    if (status === 'not put') {
-      if (next === KOMA_KURO) messageElm.textContent = '白の勝ち';
-      if (next === KOMA_SHIRO) messageElm.textContent = '黒の勝ち';
+    addObserver(observer) {
+      this.#observers.push(observer);
     }
-    if (status === 'kuro') messageElm.textContent = '黒の勝ち';
-    if (status === 'shiro') messageElm.textContent = '白の勝ち';
-    if (status === 'draw') messageElm.textContent = '引き分け';
-  }
 
-  function confirmFinish(kuroCount, shiroCount, canPutPos) {
-    const MAX_COUNT = BOARD_MAX_X * BOARD_MAX_Y;
-    if (kuroCount + shiroCount === MAX_COUNT) {
-      if (kuroCount > shiroCount) return 'kuro';
-      if (kuroCount < shiroCount) return 'shiro';
-      return 'draw';
+    get maxX() {
+      return this.#maxX;
     }
-    if (canPutPos.length === 0) {
-      return 'not put';
+
+    get maxY() {
+      return this.#maxY;
     }
-    return null;
-  }
 
-  function getCanPutPos(komaIro) {
-    const pos = [];
-    for (let x = 0; x < board.length; x++) {
-      for (let y = 0; y < board[x].length; y++) {
-        if (board[y][x] !== KOMA_NOTHING) continue;
-        if (checkPos(x, y, komaIro)) pos.push([x, y]);
-      }
+    countStone(color) {
+      return this.#board
+        .map(row => row.filter(stone => stone === color)) // 指定の色以外を消す
+        .map(row => row.length) // 残っている石を行ごとに数える
+        .reduce((prev, current) => prev + current); // 行ごとの石をすべて足す
     }
-    return pos;
-  }
 
-  const CHECK_DIRECTIONS = [
-    [0, -1],
-    [1, -1],
-    [1, 0],
-    [1, 1],
-    [0, 1],
-    [-1, 1],
-    [-1, 0],
-    [-1, -1]
-  ];
+    getStone(x, y) {
+      return this.#board[y][x];
+    }
 
-  function checkPos(checkX, checkY, komaIro) {
-    for (const direction of CHECK_DIRECTIONS) {
-      let other = false;
-      let tempX = checkX;
-      let tempY = checkY;
-      while (true) {
-        tempX = tempX + direction[0];
-        tempY = tempY + direction[1];
-        if (tempX < 0 || tempX >= BOARD_MAX_X) break;
-        if (tempY < 0 || tempY >= BOARD_MAX_Y) break;
-        const checkKomaIro = board[tempY][tempX];
-        if (checkKomaIro === KOMA_NOTHING) break;
-        if (other) {
-          if (checkKomaIro === komaIro) return true;
-        } else {
-          if (checkKomaIro === komaIro) break;
-          other = true;
+    #searchCanPutPos(stoneColor) {
+      this.#canPutPos = [];
+      for (let x = 0; x < this.#maxX; x++) {
+        for (let y = 0; y < this.#maxY; y++) {
+          const putPos = this.#checkPutPos(x, y, stoneColor);
+          if (putPos.length !== 0) {
+            this.#canPutPos.push([x, y, putPos]);
+          }
         }
       }
     }
-    return false;
-  }
 
-  function init() {
-    const tbody = document.querySelector('tbody');
-    for (let y = 0; y < BOARD_MAX_Y; y++) {
-      const tr = document.createElement('tr');
-      for (let x = 0; x < BOARD_MAX_X; x++) {
-        const td = document.createElement('td');
-        td.dataset.x = x;
-        td.dataset.y = y;
-        tr.appendChild(td);
-      }
-      tbody.appendChild(tr);
-    }
-
-    tbody.addEventListener('click', event => {
-      const tag = event.target;
-      if (tag.tagName !== 'TD') return;
-      const x = parseInt(tag.dataset.x);
-      const y = parseInt(tag.dataset.y);
-      if (canPut(x, y)) {
-        messageElm.textContent = '';
-        board[y][x] = next;
-        turn(x, y);
-        next = next === KOMA_KURO ? KOMA_SHIRO : KOMA_KURO;
-        updateBoard();
-      } else {
-        messageElm.textContent = 'そこには置けません';
-      }
-    });
-  }
-
-  function canPut(x, y) {
-    for (const pos of canPutPos) {
-      if (pos[0] === x && pos[1] === y) return true;
-    }
-    return false;
-  }
-
-  function turn(checkX, checkY) {
-    for (const direction of CHECK_DIRECTIONS) {
-      let other = false;
-      let tempX = checkX;
-      let tempY = checkY;
-      while (true) {
-        tempX = tempX + direction[0];
-        tempY = tempY + direction[1];
-        if (tempX < 0 || tempX >= BOARD_MAX_X) break;
-        if (tempY < 0 || tempY >= BOARD_MAX_Y) break;
-        const checkKomaIro = board[tempY][tempX];
-        if (checkKomaIro === KOMA_NOTHING) break;
-        if (other) {
-          if (checkKomaIro === next) {
-            let endX = tempX;
-            let endY = tempY;
-            tempX = checkX;
-            tempY = checkY;
-            while (true) {
-              if (endX === tempX && endY === tempY) break;
-              tempX = tempX + direction[0];
-              tempY = tempY + direction[1];
-              board[tempY][tempX] = next;
+    #checkPutPos(checkX, checkY, stoneColor) {
+      const canPutPos = [];
+      for (const direction of Board.DIRECTIONS) {
+        let tempX = checkX;
+        let tempY = checkY;
+        const pos = [];
+        while (true) {
+          tempX = tempX + direction[0];
+          tempY = tempY + direction[1];
+          if (tempX < 0 || tempX >= this.#maxX) break;
+          if (tempY < 0 || tempY >= this.#maxY) break;
+          const checkKomaIro = this.#board[tempY][tempX];
+          if (checkKomaIro === Board.STONE_NOTHING) break;
+          if (pos.length == 0) {
+            if (checkKomaIro === stoneColor) break;
+            pos.push(tempX, tempY);
+          } else {
+            if (checkKomaIro === stoneColor) {
+              canPutPos.push(pos);
+              break;
             }
-            break;
-          };
-        } else {
-          if (checkKomaIro === next) break;
-          other = true;
+            pos.push(tempX, tempY);
+          }
         }
       }
+      return canPutPos;
+    }
+
+    #update() {
+      this.#observers.forEach(observer => {
+        observer.update();
+      });
     }
   }
 
-  init();
-  updateBoard();
+  class BoardView {
+    #boardElm;
+    #statusElm;
+    #messageElm;
+    #countElm;
+    #board;
+    #trtds;
+    static STONE_IMAGE = ['●', '○', ''];
+
+    constructor(boardElmSelector, statusElmSelector, board) {
+      this.#setElm(boardElmSelector, statusElmSelector);
+      this.#board = board;
+      this.#init();
+      this.#setEvent();
+      this.update();
+    }
+
+    #setElm(boardElmSelector, statusElmSelector) {
+      this.#boardElm = document.querySelector(boardElmSelector);
+      this.#statusElm = document.querySelector(statusElmSelector);
+      this.#messageElm = this.#statusElm.querySelector('#message');
+      this.#countElm = this.#statusElm.querySelector('#count');
+    }
+
+    #init() {
+      this.#trtds = [];
+      for (let y = 0; y < this.#board.maxY; y++) {
+        const trElm = document.createElement('tr');
+        const trs = [];
+        for (let x = 0; x < this.#board.maxX; x++) {
+          const tdElm = document.createElement('td');
+          trElm.insertAdjacentElement('beforeend', tdElm);
+          trs.push(tdElm);
+        }
+        this.#boardElm.insertAdjacentElement('beforeend', trElm);
+        this.#trtds.push(trs);
+      }
+    }
+
+    #setEvent() {
+      this.#boardElm.addEventListener('click', event => this.#clickBoard(event));
+    }
+
+    #clickBoard(event) {
+      const target = event.target;
+      if (target.tagName !== 'TD') return;
+      const x = parseInt(target.dataset.x);
+      const y = parseInt(target.dataset.y);
+      if (this.#board.checkStone(x, y)) {
+        this.#clearMessage();
+        const changePos = this.#board.setStone(x, y);
+        this.#highlightBoard(x, y, 1);
+        for (const pos of changePos) {
+          this.#highlightBoard(pos[0], pos[1], 2);
+        }
+      } else {
+        this.#setMessage('そこには置けません');
+      }
+    }
+
+    #setMessage(message) {
+      this.#messageElm.textContent = message;
+    }
+
+    #clearMessage() {
+      this.#setMessage('');
+    }
+
+    update() {
+      this.#render();
+    }
+
+    #render() {
+      this.#renderMessage();
+      this.#renderBoard();
+    }
+
+    #renderMessage() {
+      const blackCount = this.#board.countStone(Board.STONE_BLACK);
+      const whiteCount = this.#board.countStone(Board.STONE_WHITE);
+
+      this.#countElm.textContent = `黒: ${blackCount}   白: ${whiteCount}`;
+    }
+
+    #renderBoard() {
+      for (let y = 0; y < this.#board.maxY; y++) {
+        for (let x = 0; x < this.#board.maxX; x++) {
+          const tdElm = this.#trtds[y][x];
+          tdElm.removeAttribute('class');
+          tdElm.dataset.x = x;
+          tdElm.dataset.y = y;
+          tdElm.textContent = BoardView.STONE_IMAGE[this.#board.getStone(x, y)];
+        }
+      }
+    }
+
+    #highlightBoard(x, y, type) {
+      this.#trtds[y][x].classList.add(type === 1 ? 'put' : 'change');
+    }
+  }
+
+  const board = new Board(8, 8, [[[3, 3], [4, 4]], [[3, 4], [4, 3]]], Board.STONE_BLACK);
+  const boardView = new BoardView('#board tbody', '#status', board);
+  board.addObserver(boardView);
 })();
