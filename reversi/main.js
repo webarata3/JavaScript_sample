@@ -278,7 +278,13 @@
     }
   }
 
-  const board = new Board(8, 8, [[[3, 3], [4, 4]], [[3, 4], [4, 3]]], Board.STONE_BLACK);
-  const boardView = new BoardView('#board tbody', '#status', board, [BoardView.PLAY_HUMAN, BoardView.PLAY_CPU]);
-  board.addObserver(boardView);
+  class Reversi {
+    constructor() {
+      const board = new Board(8, 8, [[[3, 3], [4, 4]], [[3, 4], [4, 3]]], Board.STONE_BLACK);
+      const boardView = new BoardView('#board tbody', '#status', board, [BoardView.PLAY_HUMAN, BoardView.PLAY_CPU]);
+      board.addObserver(boardView);
+    }
+  }
+
+  new Reversi();
 })();
