@@ -230,7 +230,8 @@
       this.#render();
       this.#turnEnd();
       if (this.#nextPlayer() === BoardView.PLAY_CPU) {
-        this.#cpu();
+        // 少し待たす
+        setTimeout(() => this.#cpu(), 1500);
       }
     }
 
