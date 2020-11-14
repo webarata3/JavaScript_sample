@@ -9,6 +9,8 @@
   const spDefenceElm = document.querySelector('#spDefence');
   const speedElm = document.querySelector('#speed');
 
+  const doryokuMaxElm = document.querySelector('#doryoku-max');
+
   lvElm.addEventListener('input', calc);
   hpElm.addEventListener('input', calc);
   attackElm.addEventListener('input', calc);
@@ -16,6 +18,8 @@
   spAttackElm.addEventListener('input', calc);
   spDefenceElm.addEventListener('input', calc);
   speedElm.addEventListener('input', calc);
+
+  doryokuMaxElm.addEventListener('click', calc);
 
   document.querySelector('#nature tbody').addEventListener('click', event => {
     document.querySelector('.selected').classList.remove('selected');
@@ -128,11 +132,13 @@
   }
 
   function calcHp(lv, shuzoku, kotai) {
-    return Math.floor((shuzoku * 2 + kotai) * lv / 100) + lv + 10;
+    const doryoku = doryokuMaxElm.checked ? 64 : 0;
+    return Math.floor((shuzoku * 2 + kotai + doryoku) * lv / 100) + lv + 10;
   }
 
   function calcABCDS(lv, shuzoku, kotai, natureHosei) {
-    return Math.floor((Math.floor((shuzoku * 2 + kotai) * lv / 100) + 5) * natureHosei);
+    const doryoku = doryokuMaxElm.checked ? 64 : 0;
+    return Math.floor((Math.floor((shuzoku * 2 + kotai + doryoku) * lv / 100) + 5) * natureHosei);
   }
 
   function getNatureHosei() {
