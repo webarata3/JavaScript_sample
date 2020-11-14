@@ -56,11 +56,11 @@
   for (const nature of natures) {
     natureMap.set(nature[0], {
       name: nature[0],
-      attack: HOSEI[nature[1]],
-      defence: HOSEI[nature[2]],
-      spAttack: HOSEI[nature[3]],
-      spDefence: HOSEI[nature[4]],
-      speed: HOSEI[nature[5]]
+      attack: nature[1],
+      defence: nature[2],
+      spAttack: nature[3],
+      spDefence: nature[4],
+      speed: nature[5]
     });
   }
 
@@ -92,21 +92,27 @@
     const shuzoku = getStatus();
     for (let kotai = 0; kotai <= 31; kotai++) {
       const hp = calcHp(shuzoku.lv, shuzoku.hp, kotai);
-      const attack = calcABCDS(shuzoku.lv, shuzoku.attack, kotai, natureHosei.attack);
-      const defence = calcABCDS(shuzoku.lv, shuzoku.defnece, kotai, natureHosei.defence);
-      const spAttack = calcABCDS(shuzoku.lv, shuzoku.spAttack, kotai, natureHosei.spAttack);
-      const spDefence = calcABCDS(shuzoku.lv, shuzoku.spDefence, kotai, natureHosei.spDefence);
-      const speed = calcABCDS(shuzoku.lv, shuzoku.speed, kotai, natureHosei.speed);
+      const attack = calcABCDS(shuzoku.lv, shuzoku.attack, kotai, HOSEI[natureHosei.attack]);
+      const defence = calcABCDS(shuzoku.lv, shuzoku.defnece, kotai, HOSEI[natureHosei.defence]);
+      const spAttack = calcABCDS(shuzoku.lv, shuzoku.spAttack, kotai, HOSEI[natureHosei.spAttack]);
+      const spDefence = calcABCDS(shuzoku.lv, shuzoku.spDefence, kotai, HOSEI[natureHosei.spDefence]);
+      const speed = calcABCDS(shuzoku.lv, shuzoku.speed, kotai, HOSEI[natureHosei.speed]);
       tbodyElm.insertAdjacentHTML('beforeend', `<tr>
        <td>${kotai}</td>
        <td>${hp}</td>
-       <td>${attack}</td>
-       <td>${defence}</td>
-       <td>${spAttack}</td>
-       <td>${spDefence}</td>
-       <td>${speed}</td>
+       <td${viewNatureUpDownClass(natureHosei.attack)}>${attack}</td>
+       <td${viewNatureUpDownClass(natureHosei.defence)}>${defence}</td>
+       <td${viewNatureUpDownClass(natureHosei.spAttack)}>${spAttack}</td>
+       <td${viewNatureUpDownClass(natureHosei.spDefence)}>${spDefence}</td>
+       <td${viewNatureUpDownClass(natureHosei.speed)}>${speed}</td>
       </tr>`)
     }
+  }
+
+  function viewNatureUpDownClass(updown) {
+    if (updown === 1) return ' class="up"';
+    if (updown === 2) return ' class="down"';
+    return '';
   }
 
   function getStatus() {

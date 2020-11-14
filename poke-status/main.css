@@ -45,20 +45,28 @@ tbody tr:nth-child(odd) {
  background-color: rgb(242, 238, 243);
 }
 
-tbody tr:hover {
- background-color: #ff0;
-}
-
 .selected {
  border: 3px solid #f00;
 }
 
 .up {
- color: #00f;
- background-color: #eef;
+ color: #f00;
 }
 
 .down {
- color: #f00;
+ color: #00f;
+}
+
+#status tbody tr:nth-child(odd) .up {
  background-color: #fee;
+}
+
+#status tbody tr:nth-child(odd) .down {
+ background-color: #eef;
+}
+
+#status tbody tr:hover,
+#status tbody tr:hover .up,
+#status tbody tr:hover .down {
+ background-color: #ff0;
 }
