@@ -153,19 +153,16 @@
   class BoardView {
     static PLAY_HUMAN = 1;
     static PLAY_CPU = 2;
-    #boardElm;
-    #statusElm;
-    #messageElm;
-    #countElm;
     #board;
+    #boardElm;
     #trtds;
     #players;
     #next;
     static STONE_IMAGE = ['●', '○', ''];
 
-    constructor(boardElmSelector, statusElmSelector, board, players) {
-      this.#setElm(boardElmSelector, statusElmSelector);
+    constructor(boardElmSelector, board, players) {
       this.#board = board;
+      this.#setElm(boardElmSelector);
       this.#init();
       this.#setEvent();
       this.#render();
@@ -175,9 +172,6 @@
 
     #setElm(boardElmSelector, statusElmSelector) {
       this.#boardElm = document.querySelector(boardElmSelector);
-      this.#statusElm = document.querySelector(statusElmSelector);
-      this.#messageElm = this.#statusElm.querySelector('#message');
-      this.#countElm = this.#statusElm.querySelector('#count');
     }
 
     #init() {
@@ -207,23 +201,19 @@
       const x = parseInt(target.dataset.x);
       const y = parseInt(target.dataset.y);
       if (this.#board.checkStone(x, y)) {
-        this.#clearMessage();
         const changePos = this.#board.setStone(x, y);
         this.#highlightBoard(x, y, 1);
         for (const pos of changePos) {
           this.#highlightBoard(pos[0], pos[1], 2);
         }
       } else {
-        this.#setMessage('そこには置けません');
+        this.#triggerMessage('そこには置けません');
       }
     }
 
-    #setMessage(message) {
-      this.#messageElm.textContent = message;
-    }
-
-    #clearMessage() {
-      this.#setMessage('');
+    #triggerMessage(message) {
+      const event = new CustomEvent('message', { detail: message });
+      this.#boardElm.dispatchEvent(event);
     }
 
     update() {
@@ -236,18 +226,6 @@
     }
 
     #render() {
-      this.#renderMessage();
-      this.#renderBoard();
-    }
-
-    #renderMessage() {
-      const blackCount = this.#board.countStone(Board.STONE_BLACK);
-      const whiteCount = this.#board.countStone(Board.STONE_WHITE);
-
-      this.#countElm.textContent = `黒: ${blackCount}   白: ${whiteCount}`;
-    }
-
-    #renderBoard() {
       for (let y = 0; y < this.#board.maxY; y++) {
         for (let x = 0; x < this.#board.maxX; x++) {
           const tdElm = this.#trtds[y][x];
@@ -278,11 +256,55 @@
     }
   }
 
+  class StatusView {
+    #statusElm;
+    #messageElm;
+    #countElm;
+    #board;
+
+    constructor(statusElmSelector, board) {
+      this.#board = board;
+      this.#statusElm = document.querySelector(statusElmSelector);
+      this.#messageElm = this.#statusElm.querySelector('#message');
+      this.#countElm = this.#statusElm.querySelector('#count');
+
+      this.#board = board;
+
+      this.#render();
+    }
+
+    update() {
+      this.#render();
+    }
+
+    #render() {
+      const blackCount = this.#board.countStone(Board.STONE_BLACK);
+      const whiteCount = this.#board.countStone(Board.STONE_WHITE);
+
+      this.#countElm.textContent = `黒: ${blackCount}   白: ${whiteCount}`;
+    }
+
+    setMessage(message) {
+      this.#messageElm.textContent = message;
+    }
+
+    #clearMessage() {
+      this.setMessage('');
+    }
+
+  }
+
   class Reversi {
     constructor() {
       const board = new Board(8, 8, [[[3, 3], [4, 4]], [[3, 4], [4, 3]]], Board.STONE_BLACK);
-      const boardView = new BoardView('#board tbody', '#status', board, [BoardView.PLAY_HUMAN, BoardView.PLAY_CPU]);
+      const boardView = new BoardView('#board tbody', board, [BoardView.PLAY_HUMAN, BoardView.PLAY_CPU]);
       board.addObserver(boardView);
+      const statusView = new StatusView('#status', board);
+      board.addObserver(statusView);
+
+      document.querySelector('#board tbody').addEventListener('message', event => {
+        statusView.setMessage(event.detail);
+      });
     }
   }
 
