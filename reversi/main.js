@@ -278,6 +278,7 @@
     }
 
     #render() {
+      this.#clearMessage();
       const blackCount = this.#board.countStone(Board.STONE_BLACK);
       const whiteCount = this.#board.countStone(Board.STONE_WHITE);
 
