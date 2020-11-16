@@ -92,6 +92,10 @@
       return this.#canPutPos;
     }
 
+    get nextColor() {
+      return this.#nextColor;
+    }
+
     countStone(color) {
       return this.#board
         .map(row => row.filter(stone => stone === color)) // 指定の色以外を消す
@@ -113,7 +117,6 @@
           }
         }
       }
-      console.log(this.#canPutPos);
     }
 
     #checkPutPos(checkX, checkY, stoneColor) {
@@ -261,6 +264,8 @@
     #statusElm;
     #messageElm;
     #countElm;
+    #blackCount;
+    #whiteCount;
     #board;
 
     constructor(statusElmSelector, board) {
@@ -268,6 +273,8 @@
       this.#statusElm = document.querySelector(statusElmSelector);
       this.#messageElm = this.#statusElm.querySelector('#message');
       this.#countElm = this.#statusElm.querySelector('#count');
+      this.#blackCount = this.#countElm.querySelector('.black');
+      this.#whiteCount = this.#countElm.querySelector('.white');
 
       this.#board = board;
 
@@ -279,11 +286,11 @@
     }
 
     #render() {
-      this.#clearMessage();
       const blackCount = this.#board.countStone(Board.STONE_BLACK);
       const whiteCount = this.#board.countStone(Board.STONE_WHITE);
 
-      this.#countElm.textContent = `黒: ${blackCount}   白: ${whiteCount}`;
+      this.#blackCount.textContent = `黒 ${blackCount}`;
+      this.#whiteCount.textContent = `白 ${whiteCount}`;
     }
 
     setMessage(message) {

@@ -45,9 +45,28 @@
     background-color: #afa;
    }
 
-   #message,
-   #count {
+   #message {
     height: 1.5em;
+   }
+
+   #count {
+    display: flex;
+   }
+
+   .black,
+   .white {
+    padding: 5px 10px;
+    width: 5em;
+   }
+
+   .black {
+    background-color: #000;
+    color: #fff;
+   }
+
+   .white {
+    background-color: #fff;
+    color: #000;
    }
 
   </style>
@@ -60,7 +79,10 @@
    </table>
    <div id="status">
     <div id="message"></div>
-    <div id="count"></div>
+    <div id="count">
+     <div class="black"></div>
+     <div class="white"></div>
+    </div>
    </div>
   </main>
  </body>
