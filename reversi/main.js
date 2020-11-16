@@ -113,10 +113,11 @@
           }
         }
       }
+      console.log(this.#canPutPos);
     }
 
     #checkPutPos(checkX, checkY, stoneColor) {
-      const canPutPos = [];
+      let canPutPos = [];
       for (const direction of Board.DIRECTIONS) {
         let tempX = checkX;
         let tempY = checkY;
@@ -130,13 +131,13 @@
           if (checkKomaIro === Board.STONE_NOTHING) break;
           if (pos.length == 0) {
             if (checkKomaIro === stoneColor) break;
-            pos.push(tempX, tempY);
+            pos.push([tempX, tempY]);
           } else {
             if (checkKomaIro === stoneColor) {
-              canPutPos.push(pos);
+              canPutPos = canPutPos.concat(pos);
               break;
             }
-            pos.push(tempX, tempY);
+            pos.push([tempX, tempY]);
           }
         }
       }
