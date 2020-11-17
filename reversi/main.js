@@ -205,11 +205,7 @@
       const x = parseInt(target.dataset.x);
       const y = parseInt(target.dataset.y);
       if (this.#board.checkStone(x, y)) {
-        const changePos = this.#board.setStone(x, y);
-        this.#highlightBoard(x, y, 1);
-        for (const pos of changePos) {
-          this.#highlightBoard(pos[0], pos[1], 2);
-        }
+        this.#highlightAll(x, y);
       } else {
         this.#triggerMessage('そこには置けません');
       }
@@ -241,6 +237,14 @@
       }
     }
 
+    #highlightAll(x, y) {
+      const changePos = this.#board.setStone(x, y);
+      this.#highlightBoard(x, y, 1);
+      for (const pos of changePos) {
+        this.#highlightBoard(pos[0], pos[1], 2);
+      }
+    }
+
     #highlightBoard(x, y, type) {
       this.#trtds[y][x].classList.add(type === 1 ? 'put' : 'change');
     }
@@ -256,7 +260,7 @@
     #cpu() {
       const canPutPos = this.#board.canPutPos;
       const pos = Math.floor(Math.random() * canPutPos.length);
-      this.#board.setStone(canPutPos[pos][0], canPutPos[pos][1]);
+      this.#highlightAll(canPutPos[pos][0], canPutPos[pos][1]);
     }
   }
 
