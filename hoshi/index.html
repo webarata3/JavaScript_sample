@@ -21,13 +21,21 @@
     text-align: right;
    }
 
+   .shortcut {
+    display: flex;
+   }
+
+   table {
+    border-collapse: collapse;
+   }
+
   </style>
  </head>
  <body>
   <main id="app">
    <p id="message">1～100までの耐性を入力してください。</p>
    <input type="number" id="rate">%<button id="addButton">追加</button>
-   <div id="shortcut">
+   <div class="shortcut" id="shortcut">
     <table>
      <tbody>
       <tr>
@@ -36,6 +44,19 @@
        <td><button data-rate="80">80%</button></td>
        <td><button data-rate="70">70%</button></td>
        <td><button data-rate="60">60%</button></td>
+      </tr>
+      <tr>
+       <td></td>
+       <td><button data-rate="95">95%</button></td>
+       <td><button data-rate="85">85%</button></td>
+       <td><button data-rate="75">75%</button></td>
+       <td><button data-rate="65">65%</button></td>
+      </tr>
+     </tbody>
+    </table>
+    <table>
+     <tbody>
+      <tr>
        <td><button data-rate="50">50%</button></td>
        <td><button data-rate="40">40%</button></td>
        <td><button data-rate="30">30%</button></td>
@@ -44,11 +65,6 @@
        <td></td>
       </tr>
       <tr>
-       <td></td>
-       <td><button data-rate="95">95%</button></td>
-       <td><button data-rate="85">85%</button></td>
-       <td><button data-rate="75">75%</button></td>
-       <td><button data-rate="65">65%</button></td>
        <td><button data-rate="55">55%</button></td>
        <td><button data-rate="45">45%</button></td>
        <td><button data-rate="35">35%</button></td>
