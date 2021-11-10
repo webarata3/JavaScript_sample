@@ -48,11 +48,11 @@
 
   const viewValues = () => {
     ratesElm.innerHTML = `
-    <table>
+    <table class="resist">
      <thead>
       <tr>
        <th>耐性</th>
-       <th>トータルの耐性</th>
+       <th class="total">トータルの<br>耐性</th>
        <th>減少率</th>
        <th></th>
       </tr>
@@ -75,7 +75,7 @@
         currentRate = 0;
       }
 
-      tbodyElm.insertAdjacentHTML('beforeend', `<tr><td class="number">${values[i]}%</td> <td class="number">${currentRate}%</td><td class="number">${r}%</td><td><button data-index="${i}">削除</tr>`);
+      tbodyElm.insertAdjacentHTML('beforeend', `<tr><td class="number">${values[i]}%</td> <td class="total number">${currentRate}%</td><td class="number">${r}%</td><td><button data-index="${i}">削除</tr>`);
     }
     tbodyElm.querySelectorAll('button').forEach(buttonElm => {
       buttonElm.addEventListener('click', () => {

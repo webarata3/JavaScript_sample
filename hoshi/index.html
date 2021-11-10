@@ -12,6 +12,7 @@
   <style>
    * {
     font-family: 'Inconsolata', 'M PLUS Rounded 1c', monospace;
+    box-sizing: border-box;
    }
 
    input[type="number"] {
@@ -29,6 +30,25 @@
 
    table {
     border-collapse: collapse;
+   }
+
+   .resist th,
+   .resist td {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+   }
+
+   .total {
+    border-left: 1px solid #f88;
+    border-right: 1px solid #f88;
+   }
+
+   th.total {
+    border-top: 1px solid #f88;
+   }
+
+   .resist tr:last-child td.total {
+    border-bottom: 1px solid #f88;
    }
 
   </style>
